@@ -41,11 +41,12 @@ struct WorkspaceView: View {
     @EnvironmentObject var auth: AuthStore
     @StateObject private var store = WorkspaceStore()
     @State private var showingAdd: Bool = false
+    @State private var showingSettings: Bool = false
 
     var body: some View {
         NavigationStack {
             content
-                .navigationTitle(auth.tenantName ?? "Workspace")
+                .navigationTitle(auth.relationshipType.workspaceTitle)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
@@ -55,10 +56,8 @@ struct WorkspaceView: View {
                         }
                     }
                     ToolbarItem(placement: .topBarLeading) {
-                        Menu {
-                            Button("Log ud", role: .destructive) {
-                                Task { await auth.logout() }
-                            }
+                        Button {
+                            showingSettings = true
                         } label: {
                             Image(systemName: "person.crop.circle")
                         }
@@ -67,12 +66,19 @@ struct WorkspaceView: View {
                 .task { await store.load() }
                 .refreshable { await store.load() }
                 .sheet(isPresented: $showingAdd) {
-                    AddEntitySheet { entity in
+                    AddEntitySheet(
+                        relationshipType: auth.relationshipType,
+                        ownBrandName: auth.ownBrandName ?? auth.tenantName ?? ""
+                    ) { entity in
                         Task {
                             await store.load()
                             await store.sync(entity)
                         }
                     }
+                }
+                .sheet(isPresented: $showingSettings) {
+                    SettingsSheet()
+                        .environmentObject(auth)
                 }
         }
     }
@@ -166,38 +172,73 @@ private struct EntityRow: View {
 
 private struct AddEntitySheet: View {
     @Environment(\.dismiss) private var dismiss
+    let relationshipType: RelationshipType
+    let ownBrandName: String
+    let onCreated: (TrackedEntity) -> Void
+
     @State private var name: String = ""
-    @State private var entityType: String = "brand"
-    @State private var sponsorLink: String = ""
     @State private var color: String = "#5b6ef0"
     @State private var isWorking: Bool = false
     @State private var errorText: String?
 
-    let onCreated: (TrackedEntity) -> Void
-    private let types = ["brand", "sponsor", "sponseret", "konkurrent"]
+    private var sponsorLink: String? {
+        // Hvis jeg ER sponsor: hver entity jeg tilføjer er en SPONSORERET ting,
+        // og min egen virksomhed er auto sponsor.
+        // Hvis jeg ER sponseret: hver entity jeg tilføjer er en sponsor, og min
+        // egen virksomhed er auto den sponserede part.
+        return ownBrandName.isEmpty ? nil : ownBrandName
+    }
+
+    private var entityType: String {
+        switch relationshipType {
+        case .sponsor: return "sponseret"   // jeg sponsorerer ⇒ entity = sponseret
+        case .sponseret: return "sponsor"   // jeg er sponsoreret ⇒ entity = sponsor
+        case .mixed: return "brand"
+        }
+    }
+
+    private var title: String { relationshipType.addLabel }
+    private var fieldLabel: String {
+        switch relationshipType {
+        case .sponsor: return "Hvem sponsorerer du?"
+        case .sponseret: return "Hvilken sponsor?"
+        case .mixed: return "Brand"
+        }
+    }
+    private var placeholder: String {
+        switch relationshipType {
+        case .sponsor: return "fx Aalborg Håndbold"
+        case .sponseret: return "fx Carlsberg"
+        case .mixed: return "fx Aalborg Håndbold"
+        }
+    }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Brand") {
-                    TextField("fx Aalborg Håndbold", text: $name)
-                        .textInputAutocapitalization(.words)
-                    Picker("Type", selection: $entityType) {
-                        ForEach(types, id: \.self) { Text($0.capitalized).tag($0) }
-                    }
-                }
-                Section("Tilknyttet sponsor (valgfri)") {
-                    TextField("fx Carlsberg", text: $sponsorLink)
+                Section(fieldLabel) {
+                    TextField(placeholder, text: $name)
                         .textInputAutocapitalization(.words)
                 }
                 Section("Farve") {
                     ColorPickerHex(hex: $color)
                 }
+                if !ownBrandName.isEmpty {
+                    Section {
+                        HStack {
+                            Text(relationshipType == .sponsor ? "Sponsoreret af" : "Sponsoreret part")
+                            Spacer()
+                            Text(ownBrandName).foregroundStyle(.secondary)
+                        }
+                    } footer: {
+                        Text("Auto-tagged fra dine indstillinger")
+                    }
+                }
                 if let errorText {
                     Section { Text(errorText).foregroundStyle(.red) }
                 }
             }
-            .navigationTitle("Nyt brand")
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -221,7 +262,7 @@ private struct AddEntitySheet: View {
                     entity_type: entityType,
                     search_text: nil,
                     color: color,
-                    sponsor_link: sponsorLink.isEmpty ? nil : sponsorLink
+                    sponsor_link: sponsorLink
                 )
                 let created = try await APIClient.shared.request(
                     "/api/entities",
@@ -230,6 +271,91 @@ private struct AddEntitySheet: View {
                     as: TrackedEntity.self
                 )
                 onCreated(created)
+                dismiss()
+            } catch {
+                errorText = error.localizedDescription
+                isWorking = false
+            }
+        }
+    }
+}
+
+struct SettingsSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var auth: AuthStore
+
+    @State private var selectedRole: RelationshipType = .sponsor
+    @State private var ownBrand: String = ""
+    @State private var tenantName: String = ""
+    @State private var isWorking: Bool = false
+    @State private var errorText: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("Jeg er") {
+                    Picker("Rolle", selection: $selectedRole) {
+                        Text("Sponsor (jeg sponsorerer)").tag(RelationshipType.sponsor)
+                        Text("Sponsoreret (jeg modtager sponsorater)").tag(RelationshipType.sponseret)
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                }
+
+                Section(selectedRole == .sponsor ? "Min virksomhed" : "Mit hold/firma") {
+                    TextField(
+                        selectedRole == .sponsor ? "fx Carlsberg" : "fx Aalborg Håndbold",
+                        text: $ownBrand
+                    )
+                    .textInputAutocapitalization(.words)
+                }
+
+                Section("Workspace-navn") {
+                    TextField("Workspace", text: $tenantName)
+                        .textInputAutocapitalization(.words)
+                }
+
+                Section {
+                    Button("Log ud", role: .destructive) {
+                        Task {
+                            await auth.logout()
+                            dismiss()
+                        }
+                    }
+                }
+
+                if let errorText {
+                    Section { Text(errorText).foregroundStyle(.red) }
+                }
+            }
+            .navigationTitle("Indstillinger")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annullér") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Gem") { save() }.disabled(isWorking)
+                }
+            }
+            .onAppear {
+                selectedRole = auth.relationshipType
+                ownBrand = auth.ownBrandName ?? ""
+                tenantName = auth.tenantName ?? ""
+            }
+        }
+    }
+
+    private func save() {
+        isWorking = true
+        errorText = nil
+        Task {
+            do {
+                try await auth.updateTenant(
+                    relationshipType: selectedRole,
+                    ownBrandName: ownBrand,
+                    name: tenantName
+                )
                 dismiss()
             } catch {
                 errorText = error.localizedDescription

@@ -2,6 +2,29 @@ import Foundation
 
 // MARK: - Auth
 
+enum RelationshipType: String, Codable, CaseIterable, Identifiable {
+    case sponsor      // Jeg sponsorerer andre (Carlsberg)
+    case sponseret    // Jeg er sponsoreret (Aalborg Håndbold)
+    case mixed        // Bureau eller blandet
+    var id: String { rawValue }
+
+    var workspaceTitle: String {
+        switch self {
+        case .sponsor: return "Mine sponsorater"
+        case .sponseret: return "Mine sponsorer"
+        case .mixed: return "Mine brands"
+        }
+    }
+
+    var addLabel: String {
+        switch self {
+        case .sponsor: return "Tilføj sponsorat"
+        case .sponseret: return "Tilføj sponsor"
+        case .mixed: return "Tilføj brand"
+        }
+    }
+}
+
 struct LoginRequest: Encodable {
     let email: String
     let password: String
@@ -11,6 +34,8 @@ struct SignupRequest: Encodable {
     let email: String
     let password: String
     let tenant_name: String
+    let relationship_type: String
+    let own_brand_name: String?
 }
 
 struct TokenResponse: Decodable {
@@ -19,6 +44,8 @@ struct TokenResponse: Decodable {
     let tenant_id: Int
     let email: String
     let tenant_name: String
+    let relationship_type: String
+    let own_brand_name: String?
 }
 
 struct MeResponse: Decodable {
@@ -27,6 +54,14 @@ struct MeResponse: Decodable {
     let email: String
     let tenant_name: String
     let role: String
+    let relationship_type: String
+    let own_brand_name: String?
+}
+
+struct TenantUpdate: Encodable {
+    let relationship_type: String?
+    let own_brand_name: String?
+    let name: String?
 }
 
 // MARK: - Entities

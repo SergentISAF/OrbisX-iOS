@@ -7,6 +7,8 @@ struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var tenantName: String = ""
+    @State private var relationshipType: RelationshipType = .sponsor
+    @State private var ownBrandName: String = ""
     @State private var isWorking: Bool = false
     @State private var errorText: String?
 
@@ -26,7 +28,28 @@ struct LoginView: View {
 
             VStack(spacing: 14) {
                 if mode == .signup {
-                    LabeledField(label: "Workspace", text: $tenantName, placeholder: "fx Aalborg Håndbold")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("JEG ER")
+                            .font(.caption2)
+                            .tracking(1.2)
+                            .foregroundStyle(.secondary)
+                        Picker("Rolle", selection: $relationshipType) {
+                            Text("Sponsor").tag(RelationshipType.sponsor)
+                            Text("Sponsoreret").tag(RelationshipType.sponseret)
+                        }
+                        .pickerStyle(.segmented)
+                        Text(relationshipType == .sponsor
+                             ? "Jeg vil overvåge dem jeg sponsorerer"
+                             : "Jeg vil overvåge mine sponsorer")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    LabeledField(
+                        label: relationshipType == .sponsor ? "Min virksomhed" : "Mit hold/firma",
+                        text: $tenantName,
+                        placeholder: relationshipType == .sponsor ? "fx Carlsberg" : "fx Aalborg Håndbold"
+                    )
                 }
                 LabeledField(label: "Email", text: $email, placeholder: "navn@firma.dk", keyboardType: .emailAddress)
                 LabeledField(label: "Password", text: $password, isSecure: true)
@@ -79,7 +102,13 @@ struct LoginView: View {
                 case .login:
                     try await auth.login(email: email, password: password)
                 case .signup:
-                    try await auth.signup(email: email, password: password, tenantName: tenantName)
+                    try await auth.signup(
+                        email: email,
+                        password: password,
+                        tenantName: tenantName,
+                        relationshipType: relationshipType,
+                        ownBrandName: tenantName
+                    )
                 }
             } catch {
                 errorText = error.localizedDescription
