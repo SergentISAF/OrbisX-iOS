@@ -19,9 +19,13 @@ actor APIClient {
         body: Encodable? = nil,
         as type: Response.Type
     ) async throws -> Response {
-        var url = baseURL.appendingPathComponent(path)
-        if !path.hasPrefix("/") {
-            url = baseURL.appendingPathComponent("/" + path)
+        // Vi bygger URL'en som streng for at bevare query-strings (`?` må ikke escapes).
+        let normalizedPath = path.hasPrefix("/") ? path : "/" + path
+        let base = baseURL.absoluteString.hasSuffix("/")
+            ? String(baseURL.absoluteString.dropLast())
+            : baseURL.absoluteString
+        guard let url = URL(string: base + normalizedPath) else {
+            throw APIError.invalidResponse
         }
         var request = URLRequest(url: url)
         request.httpMethod = method
