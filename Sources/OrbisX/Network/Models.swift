@@ -76,6 +76,7 @@ struct TrackedEntity: Decodable, Identifiable, Equatable {
     let sponsor_link: String?
     let last_synced_at: Date?
     let last_match_count: Int
+    let last_ave_dkk: Int
 }
 
 struct EntityCreate: Encodable {

@@ -131,34 +131,49 @@ private struct EntityRow: View {
     let onSync: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .center, spacing: 14) {
             Circle()
                 .fill(Color(hex: entity.color) ?? .accentColor)
-                .frame(width: 12, height: 12)
+                .frame(width: 14, height: 14)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(entity.name)
                     .font(.headline)
-                Text(entity.entity_type.capitalized)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Text(entity.entity_type.capitalized)
+                    Text("·")
+                    Text("\(entity.last_match_count) omtaler")
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
             }
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 2) {
-                Text("\(entity.last_match_count)")
-                    .font(.system(.title3, design: .serif, weight: .semibold))
-                    .monospacedDigit()
-                Text("omtaler")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                if entity.last_ave_dkk > 0 {
+                    Text(formatCompactKr(entity.last_ave_dkk))
+                        .font(.system(.title3, design: .serif, weight: .semibold))
+                        .monospacedDigit()
+                        .foregroundStyle(Color(hex: entity.color) ?? .primary)
+                    Text("annonceværdi")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("—")
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text("sync for tal")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             if isBusy {
                 ProgressView().controlSize(.small)
             }
         }
+        .padding(.vertical, 4)
         .swipeActions(edge: .trailing) {
             Button {
                 onSync()
@@ -168,6 +183,24 @@ private struct EntityRow: View {
             .tint(.blue)
         }
     }
+}
+
+/// Kort kr-format: 1.234.567 -> "1,2 mio kr", 12.345 -> "12.345 kr".
+private func formatCompactKr(_ value: Int) -> String {
+    let nf = NumberFormatter()
+    nf.locale = Locale(identifier: "da_DK")
+    nf.numberStyle = .decimal
+    if value >= 1_000_000_000 {
+        nf.maximumFractionDigits = 1
+        let v = Double(value) / 1_000_000_000.0
+        return "\(nf.string(from: NSNumber(value: v)) ?? "\(v)") mia kr"
+    }
+    if value >= 1_000_000 {
+        nf.maximumFractionDigits = 1
+        let v = Double(value) / 1_000_000.0
+        return "\(nf.string(from: NSNumber(value: v)) ?? "\(v)") mio kr"
+    }
+    return "\(nf.string(from: NSNumber(value: value)) ?? "\(value)") kr"
 }
 
 private struct AddEntitySheet: View {
