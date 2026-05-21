@@ -124,3 +124,12 @@ struct SponsorshipReport: Decodable {
     let top_stories: [PublicArticle]
     let ave_extrapolated_dkk: Int
 }
+
+// MARK: - Share
+
+struct ShareLinkResponse: Decodable {
+    let token: String
+    let url: String
+    let entity_id: Int
+    let view_count: Int
+}

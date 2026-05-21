@@ -29,6 +29,9 @@ final class EntityDetailStore: ObservableObject {
 struct EntityDetailView: View {
     let entity: TrackedEntity
     @StateObject private var store = EntityDetailStore()
+    @State private var shareURL: URL?
+    @State private var isCreatingShareLink: Bool = false
+    @State private var shareError: String?
 
     var body: some View {
         ScrollView {
@@ -57,10 +60,63 @@ struct EntityDetailView: View {
         .refreshable { await store.load(entity: entity) }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                ShareLink(item: shareText) {
+                Menu {
+                    Button {
+                        Task { await createShareLink() }
+                    } label: {
+                        Label(isCreatingShareLink ? "Opretter link..." : "Del rapport-link", systemImage: "link")
+                    }
+                    .disabled(isCreatingShareLink)
+
+                    ShareLink(item: shareText) {
+                        Label("Del kort opsummering", systemImage: "text.quote")
+                    }
+                } label: {
                     Image(systemName: "square.and.arrow.up")
                 }
             }
+        }
+        .sheet(item: shareURLBinding) { sheet in
+            ShareSheet(url: sheet.url, entityName: entity.name)
+        }
+        .alert("Kunne ikke oprette link", isPresented: shareErrorBinding) {
+            Button("OK") { shareError = nil }
+        } message: {
+            Text(shareError ?? "")
+        }
+    }
+
+    private var shareURLBinding: Binding<ShareURLWrapper?> {
+        Binding(
+            get: { shareURL.map(ShareURLWrapper.init) },
+            set: { shareURL = $0?.url }
+        )
+    }
+
+    private var shareErrorBinding: Binding<Bool> {
+        Binding(
+            get: { shareError != nil },
+            set: { if !$0 { shareError = nil } }
+        )
+    }
+
+    @MainActor
+    private func createShareLink() async {
+        isCreatingShareLink = true
+        defer { isCreatingShareLink = false }
+        do {
+            let resp = try await APIClient.shared.request(
+                "/api/entities/\(entity.id)/share",
+                method: "POST",
+                as: ShareLinkResponse.self
+            )
+            // Backend returnerer relativ URL "/shared?t=..." — vi prepender base
+            let base = await APIClient.shared.baseURLString
+            if let url = URL(string: base + resp.url) {
+                shareURL = url
+            }
+        } catch {
+            shareError = error.localizedDescription
         }
     }
 

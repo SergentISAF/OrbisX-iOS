@@ -13,6 +13,7 @@
 		682BE1B6ACA80D77A5A08A2E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB12C8EF022065CF022427A4 /* APIClient.swift */; };
 		70FF3B202F8DFDE11D7EBB06 /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A5F0DF12702065CB7485FA /* WorkspaceView.swift */; };
 		9CF221DA1FBBEA14DD415229 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C5DEF534172F94552C1FF6 /* LoginView.swift */; };
+		A6550D9D27E3BB4CDF935330 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A07F2D8E97183FF09CBA5B /* ShareSheet.swift */; };
 		B895669704EEB86BC35FCB54 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE54900495B9C95DEEA5DF /* Color+Hex.swift */; };
 		CA747C65F4D6F45A6CE328B5 /* EntityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610D0DF0F12E7E4CA608E5E6 /* EntityDetailView.swift */; };
 		F0E6909CE4C545258336EF14 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE752E425656A0F3CD03683 /* Models.swift */; };
@@ -25,6 +26,7 @@
 		610D0DF0F12E7E4CA608E5E6 /* EntityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityDetailView.swift; sourceTree = "<group>"; };
 		91C5DEF534172F94552C1FF6 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		92CFCEC1D7C1EB893478F973 /* OrbisX.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OrbisX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1A07F2D8E97183FF09CBA5B /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		BB12C8EF022065CF022427A4 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		BFE752E425656A0F3CD03683 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C039C29EAE21317A36124B97 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 			children = (
 				02CE54900495B9C95DEEA5DF /* Color+Hex.swift */,
 				C039C29EAE21317A36124B97 /* Keychain.swift */,
+				B1A07F2D8E97183FF09CBA5B /* ShareSheet.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -187,6 +190,7 @@
 				05695C79EAF7466F1DD8E193 /* Keychain.swift in Sources */,
 				9CF221DA1FBBEA14DD415229 /* LoginView.swift in Sources */,
 				F0E6909CE4C545258336EF14 /* Models.swift in Sources */,
+				A6550D9D27E3BB4CDF935330 /* ShareSheet.swift in Sources */,
 				70FF3B202F8DFDE11D7EBB06 /* WorkspaceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

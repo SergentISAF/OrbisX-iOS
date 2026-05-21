@@ -7,6 +7,11 @@ actor APIClient {
     /// Standard backend-URL. Skiftes til `app.holmstadit.dk` når Cloudflare Tunnel er opsat.
     var baseURL: URL = URL(string: "https://elpris-dashboard.tail330027.ts.net")!
 
+    var baseURLString: String {
+        let s = baseURL.absoluteString
+        return s.hasSuffix("/") ? String(s.dropLast()) : s
+    }
+
     private var token: String?
 
     func setToken(_ token: String?) {
