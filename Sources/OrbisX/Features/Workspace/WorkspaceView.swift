@@ -42,6 +42,7 @@ struct WorkspaceView: View {
     @StateObject private var store = WorkspaceStore()
     @State private var showingAdd: Bool = false
     @State private var showingSettings: Bool = false
+    @State private var showingTrending: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -55,11 +56,16 @@ struct WorkspaceView: View {
                             Image(systemName: "plus")
                         }
                     }
-                    ToolbarItem(placement: .topBarLeading) {
+                    ToolbarItemGroup(placement: .topBarLeading) {
                         Button {
                             showingSettings = true
                         } label: {
                             Image(systemName: "person.crop.circle")
+                        }
+                        Button {
+                            showingTrending = true
+                        } label: {
+                            Image(systemName: "chart.line.uptrend.xyaxis")
                         }
                     }
                 }
@@ -79,6 +85,9 @@ struct WorkspaceView: View {
                 .sheet(isPresented: $showingSettings) {
                     SettingsSheet()
                         .environmentObject(auth)
+                }
+                .sheet(isPresented: $showingTrending) {
+                    TrendingView()
                 }
         }
     }

@@ -39,6 +39,7 @@ struct EntityDetailView: View {
                 if let report = store.report {
                     aveBanner(report: report)
                     statRow(report: report)
+                    VolumeChartView(entityId: entity.id, accent: accent, days: 30)
                     topStories(report: report)
                     topOutlets(report: report)
                 } else if store.isLoading {

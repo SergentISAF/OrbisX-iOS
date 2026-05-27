@@ -8,12 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		05695C79EAF7466F1DD8E193 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C039C29EAE21317A36124B97 /* Keychain.swift */; };
+		0E712D29AEBB805E91B6B2DD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E06642EB9EBCC7A2EB4587E6 /* Assets.xcassets */; };
 		35FE9A9B8704AF36FE56A192 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB0C19BCA3A434C61FE1811 /* AuthStore.swift */; };
 		3A02E5E5C9416A4E9574DEC5 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA57D33A6F6187D062428EFA /* App.swift */; };
+		4792F5B0BD5D973D3822805D /* TrendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E98277034C6BFB47DD9C53DD /* TrendingView.swift */; };
 		682BE1B6ACA80D77A5A08A2E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB12C8EF022065CF022427A4 /* APIClient.swift */; };
 		70FF3B202F8DFDE11D7EBB06 /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A5F0DF12702065CB7485FA /* WorkspaceView.swift */; };
 		9CF221DA1FBBEA14DD415229 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C5DEF534172F94552C1FF6 /* LoginView.swift */; };
 		A6550D9D27E3BB4CDF935330 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A07F2D8E97183FF09CBA5B /* ShareSheet.swift */; };
+		B86528026504C1117E7F52CB /* VolumeChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5FC298D38386BB3464C1E8 /* VolumeChartView.swift */; };
 		B895669704EEB86BC35FCB54 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE54900495B9C95DEEA5DF /* Color+Hex.swift */; };
 		CA747C65F4D6F45A6CE328B5 /* EntityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610D0DF0F12E7E4CA608E5E6 /* EntityDetailView.swift */; };
 		F0E6909CE4C545258336EF14 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE752E425656A0F3CD03683 /* Models.swift */; };
@@ -23,6 +26,7 @@
 		02CE54900495B9C95DEEA5DF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		0DB0C19BCA3A434C61FE1811 /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
 		30A5F0DF12702065CB7485FA /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
+		3E5FC298D38386BB3464C1E8 /* VolumeChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeChartView.swift; sourceTree = "<group>"; };
 		610D0DF0F12E7E4CA608E5E6 /* EntityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityDetailView.swift; sourceTree = "<group>"; };
 		91C5DEF534172F94552C1FF6 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		92CFCEC1D7C1EB893478F973 /* OrbisX.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OrbisX.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -31,6 +35,8 @@
 		BFE752E425656A0F3CD03683 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C039C29EAE21317A36124B97 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		DA57D33A6F6187D062428EFA /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		E06642EB9EBCC7A2EB4587E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E98277034C6BFB47DD9C53DD /* TrendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -55,9 +61,18 @@
 			children = (
 				A56C3B9BA17C12229017ACCE /* Auth */,
 				EDF5BF364CEDF103DC5D3C3C /* EntityDetail */,
+				97E62493C05270BEC240C7DE /* Trending */,
 				A318475730E287FEDE7A9EAA /* Workspace */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		97E62493C05270BEC240C7DE /* Trending */ = {
+			isa = PBXGroup;
+			children = (
+				E98277034C6BFB47DD9C53DD /* TrendingView.swift */,
+			);
+			path = Trending;
 			sourceTree = "<group>";
 		};
 		A318475730E287FEDE7A9EAA /* Workspace */ = {
@@ -108,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				DA57D33A6F6187D062428EFA /* App.swift */,
+				E06642EB9EBCC7A2EB4587E6 /* Assets.xcassets */,
 				8FFA07F2DC60034C7BA86244 /* Features */,
 				BCBAA67094DFCFF1E633C0F3 /* Network */,
 				AE3C8E15CEB131FDF1AD5CF7 /* Utilities */,
@@ -119,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				610D0DF0F12E7E4CA608E5E6 /* EntityDetailView.swift */,
+				3E5FC298D38386BB3464C1E8 /* VolumeChartView.swift */,
 			);
 			path = EntityDetail;
 			sourceTree = "<group>";
@@ -131,6 +148,7 @@
 			buildConfigurationList = 429FB8B299EA4F1B7389E457 /* Build configuration list for PBXNativeTarget "OrbisX" */;
 			buildPhases = (
 				5125DA2BBE4F0B038F3E1B61 /* Sources */,
+				E101C9F135DD1CE0C7159B88 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -177,6 +195,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		E101C9F135DD1CE0C7159B88 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E712D29AEBB805E91B6B2DD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		5125DA2BBE4F0B038F3E1B61 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -191,6 +220,8 @@
 				9CF221DA1FBBEA14DD415229 /* LoginView.swift in Sources */,
 				F0E6909CE4C545258336EF14 /* Models.swift in Sources */,
 				A6550D9D27E3BB4CDF935330 /* ShareSheet.swift in Sources */,
+				4792F5B0BD5D973D3822805D /* TrendingView.swift in Sources */,
+				B86528026504C1117E7F52CB /* VolumeChartView.swift in Sources */,
 				70FF3B202F8DFDE11D7EBB06 /* WorkspaceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,17 +297,17 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OrbisX;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dk.holmstadit.orbisx;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -288,17 +319,17 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OrbisX;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				"INFOPLIST_KEY_UISupportedInterfaceOrientations~ipad" = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dk.holmstadit.orbisx;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

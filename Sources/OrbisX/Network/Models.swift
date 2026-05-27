@@ -134,3 +134,39 @@ struct ShareLinkResponse: Decodable {
     let entity_id: Int
     let view_count: Int
 }
+
+// MARK: - Volume + Trending
+
+struct VolumePoint: Decodable, Identifiable {
+    var id: String { date }
+    let date: String
+    let articles: Int
+    let minutes_on_frontpage: Int
+}
+
+struct VolumeResponse: Decodable {
+    let entity_id: Int
+    let keyword: String
+    let total_articles: Int
+    let total_minutes_on_frontpage: Int
+    let timerange_days: Int
+    let daily: [VolumePoint]
+}
+
+struct TrendingStory: Decodable, Identifiable {
+    var id: Int { thread_id ?? Int.random(in: 0..<Int.max) }
+    let thread_id: Int?
+    let title: String?
+    let url: String?
+    let site_count: Int?
+    let article_count: Int?
+    let expected_views: Int?
+    let latest_created: String?
+}
+
+struct TrendingResponse: Decodable {
+    let fetched_at: String
+    let country: String
+    let timerange_days: Int
+    let stories: [TrendingStory]
+}
