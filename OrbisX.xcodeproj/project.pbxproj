@@ -9,19 +9,16 @@
 /* Begin PBXBuildFile section */
 		05695C79EAF7466F1DD8E193 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C039C29EAE21317A36124B97 /* Keychain.swift */; };
 		0E712D29AEBB805E91B6B2DD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E06642EB9EBCC7A2EB4587E6 /* Assets.xcassets */; };
-		2437EEE1605FDC3B922AA58D /* AWSPluginsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2205876DAD5A18498D8F51E4 /* AWSPluginsCore */; };
 		25D7A7FCD078371A17EE9D93 /* ClusterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F253BB0F6070BEEF2B6D1D /* ClusterListView.swift */; };
 		35FE9A9B8704AF36FE56A192 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB0C19BCA3A434C61FE1811 /* AuthStore.swift */; };
-		37EE4C53EE5BBFE84FEF0649 /* amplifyconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = AD675C848401E3918FD52112 /* amplifyconfiguration.json */; };
 		3A02E5E5C9416A4E9574DEC5 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA57D33A6F6187D062428EFA /* App.swift */; };
 		531E25EE16F8C323056081EC /* ClusterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF0C19203DCE4274E9C980F /* ClusterDetailView.swift */; };
-		5417C09ADF0CA952B5C4285C /* AWSCognitoAuthPlugin in Frameworks */ = {isa = PBXBuildFile; productRef = 048A144FAC2BEC0DEB4D8286 /* AWSCognitoAuthPlugin */; };
 		682BE1B6ACA80D77A5A08A2E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB12C8EF022065CF022427A4 /* APIClient.swift */; };
 		9CF221DA1FBBEA14DD415229 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C5DEF534172F94552C1FF6 /* LoginView.swift */; };
 		A6550D9D27E3BB4CDF935330 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A07F2D8E97183FF09CBA5B /* ShareSheet.swift */; };
 		B895669704EEB86BC35FCB54 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE54900495B9C95DEEA5DF /* Color+Hex.swift */; };
+		BC2579699148E262FAEE0201 /* CognitoAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB07FE943A385A3942B23F65 /* CognitoAuth.swift */; };
 		C7246589B430FBCEBE73413D /* ClusterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CFDA80086170DC99495FF7 /* ClusterStore.swift */; };
-		DB83BBD9324CDB2A12733000 /* Amplify in Frameworks */ = {isa = PBXBuildFile; productRef = BAF3A28BEF39D31B4BEC4FC3 /* Amplify */; };
 		F0E6909CE4C545258336EF14 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE752E425656A0F3CD03683 /* Models.swift */; };
 		F62F7AD8CD1F4EF353456BBE /* CreateClusterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A4A56825BF5E193E59BA03 /* CreateClusterSheet.swift */; };
 /* End PBXBuildFile section */
@@ -33,29 +30,16 @@
 		7BF0C19203DCE4274E9C980F /* ClusterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterDetailView.swift; sourceTree = "<group>"; };
 		91C5DEF534172F94552C1FF6 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		92CFCEC1D7C1EB893478F973 /* OrbisX.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OrbisX.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AD675C848401E3918FD52112 /* amplifyconfiguration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = amplifyconfiguration.json; sourceTree = "<group>"; };
 		B0CFDA80086170DC99495FF7 /* ClusterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterStore.swift; sourceTree = "<group>"; };
 		B1A07F2D8E97183FF09CBA5B /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		BB12C8EF022065CF022427A4 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		BFE752E425656A0F3CD03683 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C039C29EAE21317A36124B97 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		DA57D33A6F6187D062428EFA /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		DB07FE943A385A3942B23F65 /* CognitoAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CognitoAuth.swift; sourceTree = "<group>"; };
 		E06642EB9EBCC7A2EB4587E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F4F253BB0F6070BEEF2B6D1D /* ClusterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		6D5CE71A0A3184ADB0E2E60C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DB83BBD9324CDB2A12733000 /* Amplify in Frameworks */,
-				5417C09ADF0CA952B5C4285C /* AWSCognitoAuthPlugin in Frameworks */,
-				2437EEE1605FDC3B922AA58D /* AWSPluginsCore in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		64EFA6D9B3E908F6F89AE801 /* Products */ = {
@@ -64,14 +48,6 @@
 				92CFCEC1D7C1EB893478F973 /* OrbisX.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		6979267BCCB0ED8A01579D21 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				AD675C848401E3918FD52112 /* amplifyconfiguration.json */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		6BDE70DE68CB9E3FB88921B8 = {
@@ -125,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				BB12C8EF022065CF022427A4 /* APIClient.swift */,
+				DB07FE943A385A3942B23F65 /* CognitoAuth.swift */,
 				BFE752E425656A0F3CD03683 /* Models.swift */,
 			);
 			path = Network;
@@ -145,7 +122,6 @@
 				E06642EB9EBCC7A2EB4587E6 /* Assets.xcassets */,
 				8FFA07F2DC60034C7BA86244 /* Features */,
 				BCBAA67094DFCFF1E633C0F3 /* Network */,
-				6979267BCCB0ED8A01579D21 /* Resources */,
 				AE3C8E15CEB131FDF1AD5CF7 /* Utilities */,
 			);
 			path = OrbisX;
@@ -160,7 +136,6 @@
 			buildPhases = (
 				5125DA2BBE4F0B038F3E1B61 /* Sources */,
 				E101C9F135DD1CE0C7159B88 /* Resources */,
-				6D5CE71A0A3184ADB0E2E60C /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -168,9 +143,6 @@
 			);
 			name = OrbisX;
 			packageProductDependencies = (
-				BAF3A28BEF39D31B4BEC4FC3 /* Amplify */,
-				048A144FAC2BEC0DEB4D8286 /* AWSCognitoAuthPlugin */,
-				2205876DAD5A18498D8F51E4 /* AWSPluginsCore */,
 			);
 			productName = OrbisX;
 			productReference = 92CFCEC1D7C1EB893478F973 /* OrbisX.app */;
@@ -200,9 +172,6 @@
 			);
 			mainGroup = 6BDE70DE68CB9E3FB88921B8;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				C1E2E5FCBAE65077095497DD /* XCRemoteSwiftPackageReference "amplify-swift" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 64EFA6D9B3E908F6F89AE801 /* Products */;
 			projectDirPath = "";
@@ -219,7 +188,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E712D29AEBB805E91B6B2DD /* Assets.xcassets in Resources */,
-				37EE4C53EE5BBFE84FEF0649 /* amplifyconfiguration.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +204,7 @@
 				531E25EE16F8C323056081EC /* ClusterDetailView.swift in Sources */,
 				25D7A7FCD078371A17EE9D93 /* ClusterListView.swift in Sources */,
 				C7246589B430FBCEBE73413D /* ClusterStore.swift in Sources */,
+				BC2579699148E262FAEE0201 /* CognitoAuth.swift in Sources */,
 				B895669704EEB86BC35FCB54 /* Color+Hex.swift in Sources */,
 				F62F7AD8CD1F4EF353456BBE /* CreateClusterSheet.swift in Sources */,
 				05695C79EAF7466F1DD8E193 /* Keychain.swift in Sources */,
@@ -441,35 +410,6 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		C1E2E5FCBAE65077095497DD /* XCRemoteSwiftPackageReference "amplify-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/aws-amplify/amplify-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.40.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		048A144FAC2BEC0DEB4D8286 /* AWSCognitoAuthPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C1E2E5FCBAE65077095497DD /* XCRemoteSwiftPackageReference "amplify-swift" */;
-			productName = AWSCognitoAuthPlugin;
-		};
-		2205876DAD5A18498D8F51E4 /* AWSPluginsCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C1E2E5FCBAE65077095497DD /* XCRemoteSwiftPackageReference "amplify-swift" */;
-			productName = AWSPluginsCore;
-		};
-		BAF3A28BEF39D31B4BEC4FC3 /* Amplify */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C1E2E5FCBAE65077095497DD /* XCRemoteSwiftPackageReference "amplify-swift" */;
-			productName = Amplify;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FF5296678DF00C1C9D20759F /* Project object */;
 }

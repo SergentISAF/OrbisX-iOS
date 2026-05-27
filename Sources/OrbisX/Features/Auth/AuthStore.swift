@@ -1,38 +1,44 @@
 import Foundation
 import SwiftUI
-import Amplify
-import AWSCognitoAuthPlugin
 
-/// Cognito-backed auth-store til OrbisX v2.
+/// Auth-store til OrbisX v2.
 ///
-/// Login sker via USER_SRP_AUTH (email + password) mod User Pool eu-north-1_gUBypMFpf.
-/// Amplify håndterer SRP-protokollen, token-refresh og persistent session i Keychain.
+/// Login sker via Cognito USER_PASSWORD_AUTH direkte mod cognito-idp.eu-north-1.amazonaws.com
+/// (se [[orbisx-cognito-auth]] memory). Vi gemmer refresh_token i Keychain så brugeren
+/// ikke skal logge ind igen efter app-restart. id_token + access_token holdes i memory
+/// og refreshes automatisk når de udløber (efter 1 time).
 ///
-/// VIGTIGT: `userId` cacher vi i memory som verifikations-token til backend.
-/// Det må ALDRIG vises i UI, logs eller fejlbeskeder — kun email er bruger-synlig.
+/// VIGTIGT: userId er backend-verifikations-token. Cache i memory only, vis aldrig.
 @MainActor
 final class AuthStore: ObservableObject {
     @Published private(set) var email: String?
     @Published private(set) var isAuthenticated: Bool = false
     @Published private(set) var isWorking: Bool = false
 
-    /// Backend-side verifikation. Cache i memory only, vis aldrig.
     private(set) var userId: Int?
 
+    // Memory-only token-state.
+    private var tokens: CognitoTokens?
+
+    private let refreshTokenKey = "orbisx.refresh_token"
     private let emailKey = "orbisx.email"
 
-    /// Hentes ved app-start. Tjekker om Amplify har en gemt session.
+    /// Kører ved app-start. Hvis vi har refresh_token i Keychain, henter vi nye access-tokens.
     func restore() async {
+        guard
+            let refresh = Keychain.read(key: refreshTokenKey),
+            let storedEmail = UserDefaults.standard.string(forKey: emailKey)
+        else { return }
+
         do {
-            let session = try await Amplify.Auth.fetchAuthSession()
-            if session.isSignedIn {
-                let attrs = try await Amplify.Auth.fetchUserAttributes()
-                email = attrs.first(where: { $0.key == .email })?.value
-                    ?? UserDefaults.standard.string(forKey: emailKey)
-                isAuthenticated = true
-            }
+            let newTokens = try await CognitoAuth.refresh(refreshToken: refresh)
+            self.tokens = newTokens
+            self.email = storedEmail
+            self.isAuthenticated = true
         } catch {
-            // Ingen session — bruger skal logge ind. Ikke en fejl.
+            // Refresh fejlede — refresh_token udløbet eller invalid. Ryd og forlang re-login.
+            Keychain.delete(key: refreshTokenKey)
+            UserDefaults.standard.removeObject(forKey: emailKey)
         }
     }
 
@@ -40,39 +46,37 @@ final class AuthStore: ObservableObject {
         isWorking = true
         defer { isWorking = false }
 
-        // Hvis Amplify allerede har en session (fra forrige forsøg), ryd den først.
-        _ = try? await Amplify.Auth.signOut()
-
-        let result = try await Amplify.Auth.signIn(username: email, password: password)
-        guard result.isSignedIn else {
-            throw AuthError.signInIncomplete(result.nextStep)
-        }
+        let tokens = try await CognitoAuth.signIn(email: email, password: password)
+        self.tokens = tokens
         self.email = email
+        Keychain.save(key: refreshTokenKey, value: tokens.refreshToken)
         UserDefaults.standard.set(email, forKey: emailKey)
         self.isAuthenticated = true
     }
 
     func signOut() async {
-        _ = await Amplify.Auth.signOut()
+        Keychain.delete(key: refreshTokenKey)
+        UserDefaults.standard.removeObject(forKey: emailKey)
+        tokens = nil
         email = nil
         userId = nil
         isAuthenticated = false
-        UserDefaults.standard.removeObject(forKey: emailKey)
     }
 
-    /// Cacher user_id fra første frontpage-request. Vis aldrig i UI.
     func cacheUserId(_ id: Int) {
         self.userId = id
     }
-}
 
-enum AuthError: LocalizedError {
-    case signInIncomplete(AuthSignInStep)
-
-    var errorDescription: String? {
-        switch self {
-        case .signInIncomplete(let step):
-            return "Login ikke færdigt: \(step)"
+    /// Returnerer et frisk id_token. Refresher automatisk hvis det er udløbet.
+    /// Bruges af APIClient før hver API-request.
+    func currentIdToken() async throws -> String {
+        guard var tokens = self.tokens else {
+            throw CognitoError.api(type: "NotAuthenticated", message: "Ikke logget ind")
         }
+        if tokens.isExpired {
+            tokens = try await CognitoAuth.refresh(refreshToken: tokens.refreshToken)
+            self.tokens = tokens
+        }
+        return tokens.idToken
     }
 }

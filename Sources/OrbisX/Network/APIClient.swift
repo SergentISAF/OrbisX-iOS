@@ -1,25 +1,15 @@
 import Foundation
-import Amplify
-import AWSCognitoAuthPlugin
-import AWSPluginsCore
 
 /// Klient mod OrbisX v2 cloud API.
-/// Henter altid frisk id_token fra Amplify før hver request — refresh håndteres automatisk.
+/// Henter altid frisk id_token fra AuthStore før hver request — refresh håndteres der.
 /// API'en kræver Cognito id_token (token_use: "id"), IKKE access_token.
-actor APIClient {
+@MainActor
+final class APIClient {
     static let shared = APIClient()
 
-    private let baseURL = URL(string: "https://yifub04z0f.execute-api.eu-north-1.amazonaws.com/v2")!
+    weak var auth: AuthStore?
 
-    /// Henter et frisk id_token fra Amplify. Amplify refresher selv hvis det er udløbet.
-    private func currentIdToken() async throws -> String {
-        let session = try await Amplify.Auth.fetchAuthSession()
-        guard let provider = session as? AuthCognitoTokensProvider else {
-            throw APIError.notAuthenticated
-        }
-        let tokens = try provider.getCognitoTokens().get()
-        return tokens.idToken
-    }
+    private let baseURL = URL(string: "https://yifub04z0f.execute-api.eu-north-1.amazonaws.com/v2")!
 
     func request<Response: Decodable>(
         _ path: String,
@@ -27,17 +17,17 @@ actor APIClient {
         body: Encodable? = nil,
         as type: Response.Type
     ) async throws -> Response {
+        guard let auth else { throw APIError.notAuthenticated }
+        let idToken = try await auth.currentIdToken()
+
         let normalizedPath = path.hasPrefix("/") ? path : "/" + path
-        let base = baseURL.absoluteString
-        guard let url = URL(string: base + normalizedPath) else {
+        guard let url = URL(string: baseURL.absoluteString + normalizedPath) else {
             throw APIError.invalidResponse
         }
 
         var req = URLRequest(url: url)
         req.httpMethod = method
         req.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        let idToken = try await currentIdToken()
         req.setValue("Bearer \(idToken)", forHTTPHeaderField: "Authorization")
 
         if let body {
@@ -50,9 +40,7 @@ actor APIClient {
             throw APIError.invalidResponse
         }
 
-        if http.statusCode == 401 {
-            throw APIError.unauthorized
-        }
+        if http.statusCode == 401 { throw APIError.unauthorized }
         if !(200..<300).contains(http.statusCode) {
             let detail = (try? JSONDecoder().decode(ErrorBody.self, from: data))?.detail
                 ?? String(data: data, encoding: .utf8)
