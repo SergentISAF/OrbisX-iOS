@@ -1,21 +1,24 @@
 import Foundation
+import Amplify
+import AWSCognitoAuthPlugin
+import AWSPluginsCore
 
-/// Klient mod OrbisX-værktøjets backend. Bruger Bearer-JWT i Authorization-header.
+/// Klient mod OrbisX v2 cloud API.
+/// Henter altid frisk id_token fra Amplify før hver request — refresh håndteres automatisk.
+/// API'en kræver Cognito id_token (token_use: "id"), IKKE access_token.
 actor APIClient {
     static let shared = APIClient()
 
-    /// Standard backend-URL. Skiftes til `app.holmstadit.dk` når Cloudflare Tunnel er opsat.
-    var baseURL: URL = URL(string: "https://elpris-dashboard.tail330027.ts.net")!
+    private let baseURL = URL(string: "https://yifub04z0f.execute-api.eu-north-1.amazonaws.com/v2")!
 
-    var baseURLString: String {
-        let s = baseURL.absoluteString
-        return s.hasSuffix("/") ? String(s.dropLast()) : s
-    }
-
-    private var token: String?
-
-    func setToken(_ token: String?) {
-        self.token = token
+    /// Henter et frisk id_token fra Amplify. Amplify refresher selv hvis det er udløbet.
+    private func currentIdToken() async throws -> String {
+        let session = try await Amplify.Auth.fetchAuthSession()
+        guard let provider = session as? AuthCognitoTokensProvider else {
+            throw APIError.notAuthenticated
+        }
+        let tokens = try provider.getCognitoTokens().get()
+        return tokens.idToken
     }
 
     func request<Response: Decodable>(
@@ -24,32 +27,35 @@ actor APIClient {
         body: Encodable? = nil,
         as type: Response.Type
     ) async throws -> Response {
-        // Vi bygger URL'en som streng for at bevare query-strings (`?` må ikke escapes).
         let normalizedPath = path.hasPrefix("/") ? path : "/" + path
-        let base = baseURL.absoluteString.hasSuffix("/")
-            ? String(baseURL.absoluteString.dropLast())
-            : baseURL.absoluteString
+        let base = baseURL.absoluteString
         guard let url = URL(string: base + normalizedPath) else {
             throw APIError.invalidResponse
         }
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        if let token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = method
+        req.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let idToken = try await currentIdToken()
+        req.setValue("Bearer \(idToken)", forHTTPHeaderField: "Authorization")
+
         if let body {
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try JSONEncoder().encode(AnyEncodable(body))
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpBody = try JSONEncoder().encode(AnyEncodable(body))
         }
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: req)
         guard let http = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
         }
 
+        if http.statusCode == 401 {
+            throw APIError.unauthorized
+        }
         if !(200..<300).contains(http.statusCode) {
             let detail = (try? JSONDecoder().decode(ErrorBody.self, from: data))?.detail
+                ?? String(data: data, encoding: .utf8)
             throw APIError.http(status: http.statusCode, detail: detail)
         }
 
@@ -61,14 +67,16 @@ actor APIClient {
 
 enum APIError: LocalizedError {
     case invalidResponse
+    case notAuthenticated
+    case unauthorized
     case http(status: Int, detail: String?)
 
     var errorDescription: String? {
         switch self {
-        case .invalidResponse:
-            return "Ugyldigt svar fra serveren"
-        case let .http(status, detail):
-            return detail ?? "HTTP \(status)"
+        case .invalidResponse: return "Ugyldigt svar fra serveren"
+        case .notAuthenticated: return "Ikke logget ind"
+        case .unauthorized: return "Session udløbet — log ind igen"
+        case let .http(status, detail): return detail ?? "HTTP \(status)"
         }
     }
 }
@@ -77,11 +85,8 @@ private struct ErrorBody: Decodable {
     let detail: String?
 }
 
-/// Helper så vi kan encode `Encodable` direkte uden generisk param-jonglering.
 private struct AnyEncodable: Encodable {
     let value: Encodable
     init(_ value: Encodable) { self.value = value }
-    func encode(to encoder: Encoder) throws {
-        try value.encode(to: encoder)
-    }
+    func encode(to encoder: Encoder) throws { try value.encode(to: encoder) }
 }

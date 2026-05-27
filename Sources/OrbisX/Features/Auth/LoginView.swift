@@ -3,54 +3,26 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var auth: AuthStore
 
-    @State private var mode: Mode = .login
     @State private var email: String = ""
     @State private var password: String = ""
-    @State private var tenantName: String = ""
-    @State private var relationshipType: RelationshipType = .sponsor
-    @State private var ownBrandName: String = ""
-    @State private var isWorking: Bool = false
     @State private var errorText: String?
-
-    enum Mode {
-        case login, signup
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(mode == .signup ? "Opret konto" : "Velkommen tilbage")
+            VStack(alignment: .leading, spacing: 8) {
+                Image("AppLogo")
+                    .resizable()
+                    .frame(width: 56, height: 56)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(.bottom, 4)
+                Text("OrbisX")
                     .font(.system(.largeTitle, design: .serif, weight: .semibold))
-                Text(mode == .signup ? "Opret dit workspace og tilføj brands du vil overvåge." : "Adgang til din workspace og brands.")
+                Text("Log ind for at se dine overvågnings-agenter.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
             VStack(spacing: 14) {
-                if mode == .signup {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("JEG ER")
-                            .font(.caption2)
-                            .tracking(1.2)
-                            .foregroundStyle(.secondary)
-                        Picker("Rolle", selection: $relationshipType) {
-                            Text("Sponsor").tag(RelationshipType.sponsor)
-                            Text("Sponsoreret").tag(RelationshipType.sponseret)
-                        }
-                        .pickerStyle(.segmented)
-                        Text(relationshipType == .sponsor
-                             ? "Jeg vil overvåge dem jeg sponsorerer"
-                             : "Jeg vil overvåge mine sponsorer")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    LabeledField(
-                        label: relationshipType == .sponsor ? "Min virksomhed" : "Mit hold/firma",
-                        text: $tenantName,
-                        placeholder: relationshipType == .sponsor ? "fx Carlsberg" : "fx Aalborg Håndbold"
-                    )
-                }
                 LabeledField(label: "Email", text: $email, placeholder: "navn@firma.dk", keyboardType: .emailAddress)
                 LabeledField(label: "Password", text: $password, isSecure: true)
             }
@@ -63,10 +35,10 @@ struct LoginView: View {
 
             Button(action: submit) {
                 HStack {
-                    if isWorking {
+                    if auth.isWorking {
                         ProgressView().tint(.white)
                     }
-                    Text(mode == .signup ? "Opret konto" : "Log ind")
+                    Text("Log ind")
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity, minHeight: 48)
@@ -74,14 +46,15 @@ struct LoginView: View {
                 .foregroundStyle(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
-            .disabled(isWorking || !canSubmit)
+            .disabled(auth.isWorking || !canSubmit)
 
-            Button(mode == .signup ? "Har du allerede en konto? Log ind" : "Ny her? Opret konto") {
-                mode = mode == .signup ? .login : .signup
-                errorText = nil
+            VStack(spacing: 6) {
+                Text("Konto oprettes på orbisx.ai")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Link("Åbn orbisx.ai", destination: URL(string: "https://orbisx.ai")!)
+                    .font(.footnote)
             }
-            .font(.footnote)
-            .foregroundStyle(.tint)
             .frame(maxWidth: .infinity)
 
             Spacer()
@@ -90,30 +63,17 @@ struct LoginView: View {
     }
 
     private var canSubmit: Bool {
-        !email.isEmpty && password.count >= 6 && (mode == .login || !tenantName.isEmpty)
+        !email.isEmpty && password.count >= 6
     }
 
     private func submit() {
-        isWorking = true
         errorText = nil
         Task {
             do {
-                switch mode {
-                case .login:
-                    try await auth.login(email: email, password: password)
-                case .signup:
-                    try await auth.signup(
-                        email: email,
-                        password: password,
-                        tenantName: tenantName,
-                        relationshipType: relationshipType,
-                        ownBrandName: tenantName
-                    )
-                }
+                try await auth.signIn(email: email.lowercased(), password: password)
             } catch {
                 errorText = error.localizedDescription
             }
-            isWorking = false
         }
     }
 }

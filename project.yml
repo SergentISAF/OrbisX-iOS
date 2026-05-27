@@ -10,8 +10,13 @@ settings:
     SWIFT_VERSION: "5.10"
     DEVELOPMENT_TEAM: "58Z296VH22"
     CODE_SIGN_STYLE: Automatic
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "2"
+    MARKETING_VERSION: "0.2.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  Amplify:
+    url: https://github.com/aws-amplify/amplify-swift
+    from: 2.40.0
 
 targets:
   OrbisX:
@@ -19,6 +24,13 @@ targets:
     platform: iOS
     sources:
       - path: Sources/OrbisX
+    dependencies:
+      - package: Amplify
+        product: Amplify
+      - package: Amplify
+        product: AWSCognitoAuthPlugin
+      - package: Amplify
+        product: AWSPluginsCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dk.holmstadit.orbisx
