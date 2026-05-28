@@ -4,7 +4,7 @@ struct CreateClusterSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var auth: AuthStore
 
-    let onCreated: (Cluster) -> Void
+    let onCreated: () -> Void
 
     @State private var title: String = ""
     @State private var searchText: String = ""
@@ -144,28 +144,13 @@ struct CreateClusterSheet: View {
                     site_names: nil,
                     backfill: backfill
                 )
-                let resp = try await APIClient.shared.request(
+                _ = try await APIClient.shared.request(
                     "/clusters",
                     method: "POST",
                     body: body,
                     as: CreateClusterResponse.self
                 )
-                let created = Cluster(
-                    cluster_id: resp.cluster_id,
-                    user_cluster_id: resp.user_cluster_id,
-                    title: body.title,
-                    search_text: body.search_text,
-                    cluster_type: body.cluster_type,
-                    country: body.country,
-                    score: body.score,
-                    limit: body.limit,
-                    site_names: body.site_names,
-                    article_count: nil,
-                    unseen_count: nil,
-                    last_article_at: nil,
-                    created_at: nil
-                )
-                onCreated(created)
+                onCreated()
                 dismiss()
             } catch {
                 errorText = error.localizedDescription

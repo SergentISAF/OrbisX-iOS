@@ -15,7 +15,7 @@ final class AuthStore: ObservableObject {
     @Published private(set) var isAuthenticated: Bool = false
     @Published private(set) var isWorking: Bool = false
 
-    private(set) var userId: Int?
+    private(set) var userId: String?
 
     // Memory-only token-state.
     private var tokens: CognitoTokens?
@@ -63,7 +63,7 @@ final class AuthStore: ObservableObject {
         isAuthenticated = false
     }
 
-    func cacheUserId(_ id: Int) {
+    func cacheUserId(_ id: String) {
         self.userId = id
     }
 

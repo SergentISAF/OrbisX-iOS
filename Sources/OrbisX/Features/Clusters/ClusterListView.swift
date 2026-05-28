@@ -29,7 +29,7 @@ struct ClusterListView: View {
                 .task { await refresh() }
                 .refreshable { await refresh() }
                 .sheet(isPresented: $showingCreate) {
-                    CreateClusterSheet { _ in
+                    CreateClusterSheet {
                         Task { await refresh() }
                     }
                 }
@@ -94,32 +94,24 @@ private struct ClusterRow: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(cluster.title)
+                Text(cluster.displayTitle)
                     .font(.headline)
-                if let search = cluster.search_text, !search.isEmpty {
-                    Text(search)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
                 HStack(spacing: 8) {
                     if let country = cluster.country {
                         Label(country.uppercased(), systemImage: "globe")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
-                    if let count = cluster.article_count {
-                        Label("\(count)", systemImage: "doc.text")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
+                    Label("\(cluster.total_cluster_articles)", systemImage: "doc.text")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
             }
 
             Spacer()
 
-            if let unseen = cluster.unseen_count, unseen > 0 {
-                Text("\(unseen)")
+            if cluster.new_articles > 0 {
+                Text("\(cluster.new_articles)")
                     .font(.caption.bold())
                     .foregroundStyle(.white)
                     .padding(.horizontal, 8)

@@ -13,26 +13,14 @@ final class ArticlesStore: ObservableObject {
         do {
             let encoded = email.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? email
             let resp = try await APIClient.shared.request(
-                "/users/\(encoded)/clusters/\(clusterId)/articles?page=1&limit=50",
-                as: ArticlesResponse.self
+                "/users/\(encoded)/clusters/\(clusterId)/articles?page=0&limit=50",
+                as: ClusterArticlesResponse.self
             )
-            articles = resp.articles
+            articles = resp.results
         } catch {
             errorText = error.localizedDescription
         }
         isLoading = false
-    }
-
-    func markSeen(email: String, clusterId: Int) async {
-        // POST /v2/clusters/{cluster_id}/seen?user_id=...&country=...
-        // Ikke kritisk hvis den fejler — bare best effort.
-        struct SeenBody: Encodable { let user_email: String }
-        _ = try? await APIClient.shared.request(
-            "/clusters/\(clusterId)/seen",
-            method: "POST",
-            body: SeenBody(user_email: email),
-            as: EmptyResponse.self
-        )
     }
 }
 
@@ -45,7 +33,7 @@ struct ClusterDetailView: View {
 
     var body: some View {
         content
-            .navigationTitle(cluster.title)
+            .navigationTitle(cluster.displayTitle)
             .navigationBarTitleDisplayMode(.inline)
             .task { await refresh() }
             .refreshable { await refresh() }
@@ -57,8 +45,7 @@ struct ClusterDetailView: View {
 
     private func refresh() async {
         guard let email = auth.email else { return }
-        await store.load(email: email, clusterId: cluster.cluster_id)
-        await store.markSeen(email: email, clusterId: cluster.cluster_id)
+        await store.load(email: email, clusterId: cluster.user_cluster_id)
     }
 
     @ViewBuilder
@@ -84,29 +71,12 @@ struct ClusterDetailView: View {
                 ArticleRow(article: article)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if let url = URL(string: article.url) {
+                        if let url = article.last_article_url.flatMap(URL.init) {
                             safariURL = url
-                            trackClick(article)
                         }
                     }
             }
             .listStyle(.plain)
-        }
-    }
-
-    private func trackClick(_ article: Article) {
-        guard let email = auth.email else { return }
-        struct ClickBody: Encodable {
-            let user_email: String
-            let article_id: Int
-        }
-        Task {
-            _ = try? await APIClient.shared.request(
-                "/articles/\(article.article_id)/clicked",
-                method: "PUT",
-                body: ClickBody(user_email: email, article_id: article.article_id),
-                as: EmptyResponse.self
-            )
         }
     }
 }
@@ -115,40 +85,33 @@ private struct ArticleRow: View {
     let article: Article
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            if let img = article.image_url, let url = URL(string: img) {
-                AsyncImage(url: url) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Color(.secondarySystemBackground)
-                }
-                .frame(width: 64, height: 64)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            } else {
-                Image(systemName: "newspaper")
-                    .font(.title2)
+        VStack(alignment: .leading, spacing: 8) {
+            Text(article.displayTitle)
+                .font(.headline)
+                .lineLimit(3)
+
+            if !article.article_extract.isEmpty {
+                Text(article.article_extract.joined(separator: " "))
+                    .font(.caption)
                     .foregroundStyle(.secondary)
-                    .frame(width: 64, height: 64)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .lineLimit(2)
             }
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(article.title)
-                    .font(.headline)
-                    .lineLimit(3)
-                HStack(spacing: 6) {
-                    if let site = article.site_name {
-                        Text(site)
-                    }
-                    if let date = article.published_at {
-                        Text("·")
-                        Text(formatRelative(date))
-                    }
+            HStack(spacing: 6) {
+                if let site = article.displaySite {
+                    Text(site)
                 }
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                if article.total_articles > 1 {
+                    Text("·")
+                    Text("\(article.total_articles) artikler")
+                }
+                if let date = article.last_article_created_at {
+                    Text("·")
+                    Text(formatRelative(date))
+                }
             }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
         }
         .padding(.vertical, 6)
     }
