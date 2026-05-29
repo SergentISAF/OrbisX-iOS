@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		05695C79EAF7466F1DD8E193 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = C039C29EAE21317A36124B97 /* Keychain.swift */; };
+		064D22661DCCA10602D06D5F /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7559753149A94D1A0E9D429C /* Cache.swift */; };
 		0E712D29AEBB805E91B6B2DD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E06642EB9EBCC7A2EB4587E6 /* Assets.xcassets */; };
 		25D7A7FCD078371A17EE9D93 /* ClusterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F253BB0F6070BEEF2B6D1D /* ClusterListView.swift */; };
 		35FE9A9B8704AF36FE56A192 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB0C19BCA3A434C61FE1811 /* AuthStore.swift */; };
@@ -27,6 +28,7 @@
 		02CE54900495B9C95DEEA5DF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		0DB0C19BCA3A434C61FE1811 /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
 		68A4A56825BF5E193E59BA03 /* CreateClusterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateClusterSheet.swift; sourceTree = "<group>"; };
+		7559753149A94D1A0E9D429C /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		7BF0C19203DCE4274E9C980F /* ClusterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClusterDetailView.swift; sourceTree = "<group>"; };
 		91C5DEF534172F94552C1FF6 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		92CFCEC1D7C1EB893478F973 /* OrbisX.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OrbisX.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -90,6 +92,7 @@
 		AE3C8E15CEB131FDF1AD5CF7 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				7559753149A94D1A0E9D429C /* Cache.swift */,
 				02CE54900495B9C95DEEA5DF /* Color+Hex.swift */,
 				C039C29EAE21317A36124B97 /* Keychain.swift */,
 				B1A07F2D8E97183FF09CBA5B /* ShareSheet.swift */,
@@ -201,6 +204,7 @@
 				682BE1B6ACA80D77A5A08A2E /* APIClient.swift in Sources */,
 				3A02E5E5C9416A4E9574DEC5 /* App.swift in Sources */,
 				35FE9A9B8704AF36FE56A192 /* AuthStore.swift in Sources */,
+				064D22661DCCA10602D06D5F /* Cache.swift in Sources */,
 				531E25EE16F8C323056081EC /* ClusterDetailView.swift in Sources */,
 				25D7A7FCD078371A17EE9D93 /* ClusterListView.swift in Sources */,
 				C7246589B430FBCEBE73413D /* ClusterStore.swift in Sources */,

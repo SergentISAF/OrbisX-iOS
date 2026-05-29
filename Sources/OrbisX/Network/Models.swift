@@ -6,7 +6,7 @@ import Foundation
 // (FrontPageResponse + ClusterSummary, snake_case).
 
 /// En agent (= et "user_cluster") set fra brugerens perspektiv.
-struct Cluster: Identifiable, Decodable, Hashable {
+struct Cluster: Identifiable, Codable, Hashable {
     let user_cluster_id: Int
     let user_cluster_created_at: String?
     let cluster_type: String?
@@ -24,10 +24,16 @@ struct Cluster: Identifiable, Decodable, Hashable {
     var isContextual: Bool { (cluster_type ?? "").lowercased() == "contextual" }
 }
 
-/// GET /v2/users/{email-or-id}/clusters response.
+/// GET /v2/users/{user_id}/clusters response (user_id i path SKAL være integer).
 struct ClustersFrontpageResponse: Decodable {
-    let user_id: String
+    let user_id: String   // Mikkels API returnerer "14" som string her
     let results: [Cluster]
+}
+
+/// GET /v2/users/lookup?email=... response — bruges til at oversætte email → integer user_id.
+struct UserLookupResponse: Decodable {
+    let user_id: Int
+    let email: String
 }
 
 // MARK: - Article (artikel-bundle / story-thread inden i en cluster)

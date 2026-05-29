@@ -15,16 +15,21 @@ final class AuthStore: ObservableObject {
     @Published private(set) var isAuthenticated: Bool = false
     @Published private(set) var isWorking: Bool = false
 
-    private(set) var userId: String?
+    private(set) var userId: Int?
 
     // Memory-only token-state.
     private var tokens: CognitoTokens?
 
     private let refreshTokenKey = "orbisx.refresh_token"
     private let emailKey = "orbisx.email"
+    private let userIdKey = "orbisx.user_id"
 
     /// Kører ved app-start. Hvis vi har refresh_token i Keychain, henter vi nye access-tokens.
     func restore() async {
+        // Cached user_id er per-enhed konstant — læs den ind med det samme.
+        let storedUserId = UserDefaults.standard.integer(forKey: userIdKey)
+        if storedUserId != 0 { self.userId = storedUserId }
+
         guard
             let refresh = Keychain.read(key: refreshTokenKey),
             let storedEmail = UserDefaults.standard.string(forKey: emailKey)
@@ -57,14 +62,34 @@ final class AuthStore: ObservableObject {
     func signOut() async {
         Keychain.delete(key: refreshTokenKey)
         UserDefaults.standard.removeObject(forKey: emailKey)
+        UserDefaults.standard.removeObject(forKey: userIdKey)
+        Cache.clear("orbisx.clusters")
         tokens = nil
         email = nil
         userId = nil
         isAuthenticated = false
     }
 
-    func cacheUserId(_ id: String) {
+    func cacheUserId(_ id: Int) {
         self.userId = id
+        UserDefaults.standard.set(id, forKey: userIdKey)
+    }
+
+    /// Slår email op for at få integer-user_id fra Mikkels backend.
+    /// Cacher i UserDefaults — kun ét lookup nogensinde pr. enhed (medmindre signOut).
+    /// VIGTIGT: user_id må aldrig vises i UI (se [[feedback_orbisx_user_id_internal]]).
+    func ensureUserId() async throws -> Int {
+        if let id = userId { return id }
+        guard let email = self.email else {
+            throw CognitoError.api(type: "NotAuthenticated", message: "Ingen email — login først")
+        }
+        let encoded = email.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? email
+        let resp = try await APIClient.shared.request(
+            "/users/lookup?email=\(encoded)",
+            as: UserLookupResponse.self
+        )
+        cacheUserId(resp.user_id)
+        return resp.user_id
     }
 
     /// Returnerer et frisk id_token. Refresher automatisk hvis det er udløbet.

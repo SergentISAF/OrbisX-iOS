@@ -7,13 +7,13 @@ final class ArticlesStore: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorText: String?
 
-    func load(email: String, clusterId: Int) async {
+    func load(auth: AuthStore, clusterId: Int) async {
         isLoading = true
         errorText = nil
         do {
-            let encoded = email.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? email
+            let userId = try await auth.ensureUserId()
             let resp = try await APIClient.shared.request(
-                "/users/\(encoded)/clusters/\(clusterId)/articles?page=0&limit=50",
+                "/users/\(userId)/clusters/\(clusterId)/articles?page=0&limit=50",
                 as: ClusterArticlesResponse.self
             )
             articles = resp.results
@@ -44,8 +44,7 @@ struct ClusterDetailView: View {
     }
 
     private func refresh() async {
-        guard let email = auth.email else { return }
-        await store.load(email: email, clusterId: cluster.user_cluster_id)
+        await store.load(auth: auth, clusterId: cluster.user_cluster_id)
     }
 
     @ViewBuilder

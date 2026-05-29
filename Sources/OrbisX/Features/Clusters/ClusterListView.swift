@@ -41,8 +41,7 @@ struct ClusterListView: View {
     }
 
     private func refresh() async {
-        guard let email = auth.email else { return }
-        await store.load(email: email, auth: auth)
+        await store.load(auth: auth)
     }
 
     @ViewBuilder
@@ -69,14 +68,58 @@ struct ClusterListView: View {
                 description: Text("Opret en agent for at begynde at overvåge nyheder")
             )
         } else {
-            List(store.clusters) { cluster in
-                NavigationLink {
-                    ClusterDetailView(cluster: cluster)
-                } label: {
-                    ClusterRow(cluster: cluster)
+            VStack(spacing: 0) {
+                UpdatedBanner(date: store.lastUpdated, error: store.errorText)
+                List(store.clusters) { cluster in
+                    NavigationLink {
+                        ClusterDetailView(cluster: cluster)
+                    } label: {
+                        ClusterRow(cluster: cluster)
+                    }
                 }
+                .listStyle(.insetGrouped)
             }
-            .listStyle(.insetGrouped)
+        }
+    }
+}
+
+private struct UpdatedBanner: View {
+    let date: Date?
+    let error: String?
+
+    private var relativeText: String {
+        guard let date else { return "" }
+        let rel = RelativeDateTimeFormatter()
+        rel.locale = Locale(identifier: "da_DK")
+        rel.unitsStyle = .short
+        return rel.localizedString(for: date, relativeTo: Date())
+    }
+
+    var body: some View {
+        if let error {
+            HStack(spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                Text("Kunne ikke opdatere — viser cached data")
+                    .lineLimit(1)
+                Spacer()
+                Text(error)
+                    .lineLimit(1)
+                    .foregroundStyle(.secondary)
+            }
+            .font(.caption2)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(Color.orange.opacity(0.1))
+        } else if date != nil {
+            HStack {
+                Text("Opdateret \(relativeText)")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 6)
         }
     }
 }
